@@ -36,3 +36,51 @@ During the first 5 seconds of the program running the RGB LED will emit a variet
 The code is written so that these first 10 seconds are the calibration period. In the video i have already done the calibration, to save time in the video because it was taking too much space in recording, hence I have done the calibration off screen, and had simply placed a red paper aboce the LED and LDR to directly show the working of the project. 
 
 CODE WORKING:
+
+(int ledArray[] = {5,6,9};) defines the colour sensor LED pins
+(boolean balanceSet = false;) boolean to check if the balance has been set, basically we want to confirm calibration status
+(int red = 0;
+int green = 0;
+int blue = 0;)  here we want to create and place 'holders' for any colour that has been detected
+
+(float colourArray[] = {0,0,0};
+float whiteArray[] = {0,0,0};
+float blackArray[] = {0,0,0};) I have decared float arrays to hold and contain the colour arrays
+(int avgRead;) placed a holder for average reading of the observation to help make the closest to correct observation
+
+In the 'setup' function:
+(  pinMode(2,OUTPUT);
+  pinMode(3,OUTPUT);
+  pinMode(4,OUTPUT);) Here, the outputs for the colour sensor are being set up
+  
+  ( Serial.begin(9600);) here, the serial communication begins
+  
+In the loop:
+
+In the 'checkbalance' function in the loop, we iterate if the balance has been set, and if it hasn't, then we send the instruction to set it
+
+In the 'setbalance' function:
+ delay for five seconds is created, this gives us time to get a white sample in front of our sensor
+ scan the white sample.
+ go through each light, get a reading, set the base reading for each colour red, green, and blue to the white array.
+ 
+ the white is scanned, then the LED will produce a blue pulse to indicate that now the black colour sample may be placed
+ then another delay for 5 seconds is carried out to allow the effective scanning of the black to complete the calibration process.
+ 
+ The 'Checkcolour' function requires extensive explanation, hence almost each line will be explained:
+ 
+   (  digitalWrite(ledArray[i],HIGH);)  turn or the LED, red, green or blue depending which iteration
+     (delay(100);        )              delay to allow CdS to stabalize, they are slow
+     (getReading(5);      )            take a reading however many times
+     (colourArray[i] = avgRead; )       set the current colour in the array to the average reading
+     (float greyDiff = whiteArray[i] - blackArray[i];  ) the highest possible return minus the lowest returns the area for values in between
+     (colourArray[i] = (colourArray[i] - blackArray[i])/(greyDiff)*255; ) the reading returned minus the lowest value divided by the possible range multiplied by 255 will give us a value roughly between 0-255 representing the value for the current reflectivity(for the colour it is exposed to) of what is being scanned
+    ( digitalWrite(ledArray[i],LOW); )   turn off the current LED
+    
+    In the 'getreading' function we take in how many ever readings were requested and then add them up.
+    
+    We then calculate the average and set it up.
+    
+    after this, the R, G and B componenets of the colour of the object in front of the sensor will be printed on the screen. Each time, a delay of 2 seconds is placed.
+    
+    
